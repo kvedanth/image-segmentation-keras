@@ -84,9 +84,11 @@ def train(model,
           custom_augmentation=None,
           other_inputs_paths=None,
           preprocessing=None,
-          read_image_type=1  # cv2.IMREAD_COLOR = 1 (rgb),
+          read_image_type=1,  # cv2.IMREAD_COLOR = 1 (rgb),
                              # cv2.IMREAD_GRAYSCALE = 0,
                              # cv2.IMREAD_UNCHANGED = -1 (4 channels like RGBA)
+          accuracy_metrics=['accuracy'],                # Added by kvedanth
+          loss_function='categorical_crossentropy'      # Added by kvedanth                       
          ):
     from .models.all_models import model_from_name
     # check if user gives model name instead of the model object
@@ -114,11 +116,11 @@ def train(model,
         if ignore_zero_class:
             loss_k = masked_categorical_crossentropy
         else:
-            loss_k = 'categorical_crossentropy'
+            loss_k = loss_function #'categorical_crossentropy'
 
         model.compile(loss=loss_k,
                       optimizer=optimizer_name,
-                      metrics=['accuracy'])
+                      metrics=accuracy_metrics)
 
     if checkpoints_path is not None:
         config_file = checkpoints_path + "_config.json"
