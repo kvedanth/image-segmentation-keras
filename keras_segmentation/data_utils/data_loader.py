@@ -243,7 +243,7 @@ def verify_segmentation_dataset(images_path, segs_path,
 
 # KVedanth - Added process mask to convert the input mask into one-hot encoded mask
 def process_mask(rgb_mask, colormap, width, height):
-
+    print('RGB Mask Type: ', type(rgb_mask))
     if type(rgb_mask) is np.ndarray:
         mask_img = rgb_mask
     elif isinstance(rgb_mask, six.string_types):
