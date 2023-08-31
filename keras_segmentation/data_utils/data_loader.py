@@ -241,7 +241,32 @@ def verify_segmentation_dataset(images_path, segs_path,
         print("Found error during data loading\n{0}".format(str(e)))
         return False
 
+# KVedanth - Added process mask to convert the input mask into one-hot encoded mask
+def process_mask(rgb_mask, colormap, width, height):
 
+    if type(rgb_mask) is np.array:
+        mask_img = rgb_mask
+    elif isinstance(rgb_mask, six.string_types):
+        if not os.path.isfile(rgb_mask):
+            raise DataLoaderError("get_segmentation_array: "
+                                  "path {0} doesn't exist".format(rgb_mask))
+        mask_img = cv2.imread(rgb_mask, 1)
+    else:
+        raise DataLoaderError("get_segmentation_array: "
+                              "Can't process input type {0}"
+                              .format(str(type(rgb_mask))))
+
+    mask_img = cv2.resize(mask_img, (width, height), interpolation=cv2.INTER_NEAREST)
+
+    output_mask = []
+   
+    for i, color in enumerate(colormap):
+        cmap = np.all(np.equal(mask_img, color), axis=-1)
+        output_mask.append(cmap)
+        
+    output_mask = np.stack(output_mask, axis=-1)
+    return output_mask
+    
 def image_segmentation_generator(images_path, segs_path, batch_size,
                                  n_classes, input_height, input_width,
                                  output_height, output_width,
@@ -249,6 +274,7 @@ def image_segmentation_generator(images_path, segs_path, batch_size,
                                  augmentation_name="aug_all",
                                  custom_augmentation=None,
                                  other_inputs_paths=None, preprocessing=None,
+                                 mask_encoding=False, mask_colormap=None
                                  read_image_type=cv2.IMREAD_COLOR , ignore_segs=False ):
     
 
@@ -334,8 +360,12 @@ def image_segmentation_generator(images_path, segs_path, batch_size,
                 X.append(oth)
 
             if not ignore_segs:
-                Y.append(get_segmentation_array(
-                    seg, n_classes, output_width, output_height))
+                # If mask_encoding
+                if mask_encoding:
+                    # Custom code to process mask.
+                    Y.append(process_mask(seg, mask_colormap, output_width, output_height))
+                else:
+                    Y.append(get_segmentation_array(seg, n_classes, output_width, output_height))
 
         if ignore_segs:
             yield np.array(X)
