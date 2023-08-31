@@ -268,6 +268,7 @@ def process_mask(rgb_mask, colormap, width, height):
         output_mask.append(cmap)
         
     output_mask = np.stack(output_mask, axis=-1)
+    output_mask = np.reshape(output_mask, (width*height, len(colormap)))
     return output_mask
     
 def image_segmentation_generator(images_path, segs_path, batch_size,
