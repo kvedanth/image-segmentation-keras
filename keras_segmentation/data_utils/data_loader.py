@@ -274,7 +274,7 @@ def image_segmentation_generator(images_path, segs_path, batch_size,
                                  augmentation_name="aug_all",
                                  custom_augmentation=None,
                                  other_inputs_paths=None, preprocessing=None,
-                                 mask_encoding=False, mask_colormap=None
+                                 mask_encoding=False, mask_colormap=None,
                                  read_image_type=cv2.IMREAD_COLOR , ignore_segs=False ):
     
 
