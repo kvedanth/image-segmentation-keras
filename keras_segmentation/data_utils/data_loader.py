@@ -243,7 +243,9 @@ def verify_segmentation_dataset(images_path, segs_path,
 
 # KVedanth - Added process mask to convert the input mask into one-hot encoded mask
 def process_mask(rgb_mask, colormap, width, height):
-    print('RGB Mask Type: ', type(rgb_mask))
+
+    mask_img = rgb_mask
+    '''
     if type(rgb_mask) is np.ndarray:
         mask_img = rgb_mask
     elif isinstance(rgb_mask, six.string_types):
@@ -255,7 +257,8 @@ def process_mask(rgb_mask, colormap, width, height):
         raise DataLoaderError("get_segmentation_array: "
                               "Can't process input type {0}"
                               .format(str(type(rgb_mask))))
-
+    '''
+    
     mask_img = cv2.resize(mask_img, (width, height), interpolation=cv2.INTER_NEAREST)
 
     output_mask = []
