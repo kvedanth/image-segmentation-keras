@@ -264,7 +264,7 @@ def process_mask(rgb_mask, colormap, width, height):
     output_mask = []
    
     for i, color in enumerate(colormap):
-        cmap = np.all(np.equal(mask_img, color), axis=-1)
+        cmap = np.all(np.equal(mask_img, color).astype(int), axis=-1)
         output_mask.append(cmap)
         
     output_mask = np.stack(output_mask, axis=-1)
