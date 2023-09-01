@@ -242,6 +242,20 @@ def verify_segmentation_dataset(images_path, segs_path,
         return False
 
 # KVedanth - Added process mask to convert the input mask into one-hot encoded mask
+
+def mask_to_labels(mask, colorDict): 
+    seg_labels = np.zeros(mask.shape[:2]) 
+    for label, color in enumerate(colorDict.keys()):
+        color= np.array(color) 
+        if label < len(colorDict.keys()):
+            for _x, x in enumerate(mask):
+                for _y, y in enumerate(x):
+                    pixel = np.array(mask[_x][_y])
+                    if np.all(pixel == color):
+                        seg_labels[_x][_y] = label
+    return seg_labels
+
+
 def process_mask(rgb_mask, colormap, width, height):
 
     mask_img = rgb_mask
@@ -367,7 +381,8 @@ def image_segmentation_generator(images_path, segs_path, batch_size,
                 # If mask_encoding
                 if mask_encoding:
                     # Custom code to process mask.
-                    Y.append(process_mask(seg, mask_colormap, output_width, output_height))
+                    Y.append(mask_to_labels(seg, mask_colormap))
+                    #Y.append(process_mask(seg, mask_colormap, output_width, output_height))
                 else:
                     Y.append(get_segmentation_array(seg, n_classes, output_width, output_height))
 
