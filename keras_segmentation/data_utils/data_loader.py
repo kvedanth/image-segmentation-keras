@@ -256,7 +256,7 @@ def mask_to_labels(mask, colorDict):
     return seg_labels
 
 
-def process_mask(rgb_mask, colormap, width, height):
+def process_mask(rgb_mask, colormap, width, height, no_reshape=False):
 
     mask_img = rgb_mask
     '''
@@ -282,7 +282,8 @@ def process_mask(rgb_mask, colormap, width, height):
         output_mask.append(cmap)
         
     output_mask = np.stack(output_mask, axis=-1)
-    output_mask = np.reshape(output_mask, (width*height, len(colormap)))
+    if not no_reshape:
+        output_mask = np.reshape(output_mask, (width*height, len(colormap)))
     return output_mask
     
 def image_segmentation_generator(images_path, segs_path, batch_size,
@@ -381,8 +382,8 @@ def image_segmentation_generator(images_path, segs_path, batch_size,
                 # If mask_encoding
                 if mask_encoding:
                     # Custom code to process mask.
-                    Y.append(mask_to_labels(seg, mask_colormap))
-                    #Y.append(process_mask(seg, mask_colormap, output_width, output_height))
+                    #Y.append(mask_to_labels(seg, mask_colormap))
+                    Y.append(process_mask(seg, mask_colormap, output_width, output_height))
                 else:
                     Y.append(get_segmentation_array(seg, n_classes, output_width, output_height))
 
